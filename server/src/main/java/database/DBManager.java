@@ -323,6 +323,8 @@ public class DBManager {
         }
     }
 
+
+
     public boolean validateUser(String username, String password) {
         String searchUser = "select username from users where username = ? AND password = ?;";
         try (Connection connection = dbConnector.getConnection()) {

@@ -88,22 +88,11 @@ public class CollectionCommandReceiver implements Serializable {
         int execCode = 0;
         try {
             if (CollectionManager.isEmpty()) throw new EmptyCollectionException();
-            List<Long> ids = new ArrayList<>();
-            if (dbManager.getUsersObjectsIds(ids, username) == 0) {
-                ResponseBuilder.appendln("Объекты пользователя " + username);
-                for (long id : ids) {
-                    int index = CollectionManager.getIndexById(id);
-                    ResponseBuilder.appendln(CollectionManager.getCollection().get(index).toString());
-                }
-            } else {
-                ResponseBuilder.appendln("Ошибка получения объектов из БД");
-                execCode = 1;
+            for (LabWork lw : CollectionManager.getCollection()) {
+                ResponseBuilder.appendln(lw.toString());
             }
         } catch (EmptyCollectionException e) {
             ResponseBuilder.appendln("Коллекция пуста!");
-        } catch (NoSuchIDException e) {
-            ResponseBuilder.appendln("Рассинхронизация идентификаторов в коллекции и БД");
-            execCode = 1;
         }
         return execCode;
     }

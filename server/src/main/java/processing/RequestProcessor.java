@@ -10,6 +10,7 @@ import utility.RequestType;
 import utility.ResponseBuilder;
 
 import java.io.Serializable;
+import java.sql.SQLException;
 
 public class RequestProcessor {
     private final DBConnector dbConnector;
@@ -60,6 +61,14 @@ public class RequestProcessor {
         } catch (WrongCommandFormatException e) {
             ResponseBuilder.appendln("Использование: " + cmd.toStringWithArgs());
             return false;
+        }
+    }
+
+    public void closeDBConnection() {
+        try {
+            dbConnector.getConnection().close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }

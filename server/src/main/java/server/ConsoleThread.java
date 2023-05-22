@@ -2,6 +2,8 @@ package server;
 
 import processing.ServerCommandExecutor;
 
+import java.util.NoSuchElementException;
+
 public class ConsoleThread implements Runnable {
     private ServerCommandInputReceiver scir;
     private ServerCommandExecutor executor;
@@ -12,9 +14,13 @@ public class ConsoleThread implements Runnable {
     }
 
     public void run() {
-        while (true) {
-            String[] serverCommand = scir.parseCommand();
-            executor.execute(serverCommand);
+        try {
+            while (true) {
+                String[] serverCommand = scir.parseCommand();
+                executor.execute(serverCommand);
+            }
+        } catch (NoSuchElementException e) {
+            System.exit(0);
         }
     }
 }

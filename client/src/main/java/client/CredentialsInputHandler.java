@@ -54,12 +54,20 @@ public class CredentialsInputHandler {
 
     private String askForLogin(int action) {
         String message = (action == 0 ? "Введите имя пользователя (минимум 3 символа): " : "Введите имя пользователя: ");
-        return String.valueOf(terminal.readLine(message));
+        if (terminal != null) return String.valueOf(terminal.readLine(message));
+        else {
+            System.out.println(message);
+            return scanner.nextLine();
+        }
     }
 
     private String askForPassword(int action) {
         String message = (action == 0 ? "Введите пароль (минимум 6 символов): " : "Введите пароль: ");
-        return String.valueOf(terminal.readPassword(message));
+        if (terminal != null) return String.valueOf(terminal.readPassword(message));
+        else {
+            System.out.println(message);
+            return scanner.nextLine();
+        }
     }
 
     public String generateSalt() {

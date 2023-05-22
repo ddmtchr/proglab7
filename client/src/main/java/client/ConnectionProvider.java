@@ -54,6 +54,7 @@ public class ConnectionProvider {
             datagramSocket.receive(datagramPacket);
             ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(buffer.array()));
             response = (Response) ois.readObject();
+            System.out.println(response.getBody().getBytes().length);
             return response;
         } catch (SocketTimeoutException e) {
             throw new SocketTimeoutException();

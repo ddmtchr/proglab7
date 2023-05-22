@@ -15,17 +15,21 @@ public class ConnectionProvider {
         DatagramChannel datagramChannel = DatagramChannel.open();
         socket = datagramChannel.socket();
         socket.bind(new InetSocketAddress(port));
+        socket.setSoTimeout(100);
         System.out.println("Сервер запущен. Порт: " + port);
     }
 
-    public void send(Response response, SocketAddress address) {
+    public void send(Response response) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
              ObjectOutputStream oos = new ObjectOutputStream(baos)) {
 
             oos.writeObject(response);
+            oos.flush();
             DatagramPacket responsePacket = new DatagramPacket(baos.toByteArray(), baos.size());
-            responsePacket.setSocketAddress(address);
+            responsePacket.setSocketAddress(response.getAddress());
+
             socket.send(responsePacket);
+            System.out.println("FINALLY SENT");
         } catch (SocketException e) {
             System.out.println("Сообщение не лезет в пакет!");
         } catch (IOException e) {
@@ -33,7 +37,7 @@ public class ConnectionProvider {
         }
     }
 
-    public Request receive() throws SocketTimeoutException {
+    public Request receive() {
         Request request;
         try {
             ByteBuffer buf = ByteBuffer.allocate(8192);
@@ -49,7 +53,7 @@ public class ConnectionProvider {
 
             return request;
         } catch (SocketTimeoutException e) {
-            throw new SocketTimeoutException();
+            return null;
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {

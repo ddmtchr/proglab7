@@ -50,5 +50,7 @@ public class Server {
         else System.exit(0);
     }
 
+    public static void shutdownServer() {
 
+    }
 }
