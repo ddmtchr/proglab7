@@ -29,7 +29,6 @@ public class ConnectionProvider {
             responsePacket.setSocketAddress(response.getAddress());
 
             socket.send(responsePacket);
-            System.out.println("FINALLY SENT");
         } catch (SocketException e) {
             System.out.println("Сообщение не лезет в пакет!");
         } catch (IOException e) {
