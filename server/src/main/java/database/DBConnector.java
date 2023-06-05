@@ -1,5 +1,7 @@
 package database;
 
+import server.Server;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -21,7 +23,7 @@ public class DBConnector {
             System.out.println("Ошибка подключения к БД");
             e.printStackTrace();
             testConnection = null;
-            System.exit(0);
+            Server.shutdown();
         }
         this.connection = testConnection;
     }
@@ -33,8 +35,23 @@ public class DBConnector {
         } catch (SQLException e) {
             System.out.println("Ошибка подключения к БД");
             e.printStackTrace();
-            System.exit(0);
+            Server.shutdown();
         }
         return null;
+    }
+
+    public <T> T handleQuery(SQLFunction<Connection, T> query) throws SQLException {
+        try (Connection connection = DriverManager.getConnection(jdbcURL, properties)) {
+            return query.apply(connection);
+        }
+    }
+
+    public void close() {
+        try {
+            if (!connection.isClosed()) connection.close();
+        } catch (SQLException e) {
+            System.out.println("Ошибка закрытия соединения");
+            e.printStackTrace();
+        }
     }
 }

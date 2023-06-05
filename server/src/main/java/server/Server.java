@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Server {
+    private static boolean isRunning;
     private int port;
     private Scanner scanner;
     private ConnectionProvider connectionProvider;
@@ -24,6 +25,7 @@ public class Server {
 
     public void run() {
         try {
+            isRunning = true;
             dbManager.initializeDB();
             logger.log(Level.INFO, "База данных инициализирована");
 
@@ -47,10 +49,14 @@ public class Server {
 
     private void initCollection() {
         if (dbManager.getCollectionFromDB()) CollectionManager.setLastInitTime();
-        else System.exit(0);
+        else Server.shutdown();
     }
 
-    public static void shutdownServer() {
+    public static boolean isRunning() {
+        return isRunning;
+    }
 
+    public static void shutdown() {
+        isRunning = false;
     }
 }

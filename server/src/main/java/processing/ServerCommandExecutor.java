@@ -1,5 +1,7 @@
 package processing;
 
+import server.Server;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -11,7 +13,7 @@ public class ServerCommandExecutor {
             if (serverCommand[1].equals(" ")) {
                 logger.log(Level.INFO, "Выход с сервера");
                 System.out.println("Роняем сервер...");
-                System.exit(0);
+                Server.shutdown();
             } else {
                 System.out.println("Использование: exit");
             }

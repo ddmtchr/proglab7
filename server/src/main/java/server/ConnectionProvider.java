@@ -7,8 +7,12 @@ import java.io.*;
 import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ConnectionProvider {
+    private static final Logger logger = Logger.getLogger(Server.class.getName());
+
     private final DatagramSocket socket;
 
     public ConnectionProvider(int port) throws IOException {
@@ -29,6 +33,7 @@ public class ConnectionProvider {
             responsePacket.setSocketAddress(response.getAddress());
 
             socket.send(responsePacket);
+            logger.log(Level.INFO, "Ответ отправлен");
         } catch (SocketException e) {
             System.out.println("Сообщение не лезет в пакет!");
         } catch (IOException e) {
@@ -49,7 +54,7 @@ public class ConnectionProvider {
 
             request = (Request) objectInputStream.readObject();
             request.setHost(address);
-
+            logger.log(Level.INFO, "Запрос принят");
             return request;
         } catch (SocketTimeoutException e) {
             return null;

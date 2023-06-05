@@ -16,8 +16,9 @@ public class LabWork implements Comparable<LabWork> {
     private final long averagePoint;
     private final Difficulty difficulty;
     private Discipline discipline;
+    private String username;
 
-    public LabWork(LabWorkStatic lws) {
+    public LabWork(LabWorkStatic lws, String username) {
         this.name = lws.getName();
         this.coordinates = lws.getCoordinates();
         this.creationDate = lws.getCreationDate();
@@ -25,10 +26,11 @@ public class LabWork implements Comparable<LabWork> {
         this.averagePoint = lws.getAveragePoint();
         this.difficulty = lws.getDifficulty();
         this.discipline = lws.getDiscipline();
+        this.username = username;
     }
 
     public LabWork(long id, String name, Coordinates coordinates, ZonedDateTime creationDate,
-                   int minimalPoint, long averagePoint, Difficulty difficulty, Discipline discipline) {
+                   int minimalPoint, long averagePoint, Difficulty difficulty, Discipline discipline, String username) {
         this.id = id;
         this.name = name;
         this.coordinates = coordinates;
@@ -37,6 +39,7 @@ public class LabWork implements Comparable<LabWork> {
         this.averagePoint = averagePoint;
         this.difficulty = difficulty;
         this.discipline = discipline;
+        this.username = username;
     }
 
     public void setId(long id) {
@@ -114,6 +117,11 @@ public class LabWork implements Comparable<LabWork> {
     public void setDiscipline(Discipline d) {
         this.discipline = d;
     }
+
+    public String getUsername() {
+        return username;
+    }
+
     /**
      * Compares two names of LabWorks lexicographically.
      * @param lwToCompare the object to be compared.
@@ -135,7 +143,8 @@ public class LabWork implements Comparable<LabWork> {
         return "LabWork " + "id = " + id + "\n\t\tname = " + name + "\n\t\tcoordinates = " + coordinates.toString() +
                 "\n\t\tcreationDate = " + creationDate.toString() + "\n\t\tminimalPoint = " + minimalPoint +
                 "\n\t\taveragePoint = " + averagePoint + "\n\t\tdifficulty = " + difficulty.name() +
-                "\n\t\tdiscipline = " + (discipline == null ? "null" : discipline.toString());
+                "\n\t\tdiscipline = " + (discipline == null ? "null" : discipline.toString()) +
+                "\n\t\towner = " + username;
     }
 
 }

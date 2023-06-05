@@ -11,7 +11,9 @@ import utility.ResponseBuilder;
 
 import java.io.Serializable;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Comparator;
+import java.util.Set;
+import java.util.Vector;
 import java.util.stream.Collectors;
 
 
@@ -107,7 +109,7 @@ public class CollectionCommandReceiver implements Serializable {
         int execCode;
         try {
             LabWorkStatic lws = (LabWorkStatic) objectArgs;
-            LabWork lw = new LabWork(lws);
+            LabWork lw = new LabWork(lws, username);
             long newId = dbManager.addElement(lws, username);
             if (newId >= 0) {
                 lw.setId(newId);
@@ -138,10 +140,11 @@ public class CollectionCommandReceiver implements Serializable {
             long id = Long.parseLong(args);
             LabWorkStatic lws = (LabWorkStatic) objectArgs;
             LabWork oldLabWork = CollectionManager.getElementById(id);
-            if (dbManager.checkObjectOwner(id, username)) {
-                if (dbManager.updateElement(id, lws, username) == 0) {
+            if (oldLabWork == null) throw new NoSuchIDException();
+            if (CollectionManager.checkObjectOwner(id, username)) {
+                if (dbManager.updateElement(id, lws) == 0) {
                     CollectionManager.remove(oldLabWork);
-                    LabWork lw = new LabWork(lws);
+                    LabWork lw = new LabWork(lws, username);
                     lw.setId(id);
                     CollectionManager.add(lw);
                     ResponseBuilder.appendln("Элемент с id=" + id + " успешно обновлен");
@@ -179,9 +182,11 @@ public class CollectionCommandReceiver implements Serializable {
         try {
             if (CollectionManager.isEmpty()) throw new EmptyCollectionException();
             long id = Long.parseLong(args);
-            if (dbManager.checkObjectOwner(id, username)) {
+            LabWork lwToRemove = CollectionManager.getElementById(id);
+            if (lwToRemove == null) throw new NoSuchIDException();
+            if (CollectionManager.checkObjectOwner(id, username)) {
                 if (dbManager.deleteElement(id) == 0) {
-                    CollectionManager.remove(CollectionManager.getIndexById(id));
+                    CollectionManager.remove(lwToRemove);
                     ResponseBuilder.appendln("Элемент с id=" + id + " успешно удален");
                     execCode = 0;
                 } else {
@@ -240,7 +245,7 @@ public class CollectionCommandReceiver implements Serializable {
             int index = Integer.parseInt(args);
             if (index < 0 || index > CollectionManager.size()) throw new ArrayIndexOutOfBoundsException();
             LabWorkStatic lws = (LabWorkStatic) objectArgs;
-            LabWork lw = new LabWork(lws);
+            LabWork lw = new LabWork(lws, username);
             long newId = dbManager.addElement(lws, username);
             if (newId >= 0) {
                 lw.setId(newId);
@@ -275,7 +280,7 @@ public class CollectionCommandReceiver implements Serializable {
         try {
             if (CollectionManager.isEmpty()) throw new EmptyCollectionException();
             LabWorkStatic lws = (LabWorkStatic) objectArgs;
-            LabWork comparableLW = new LabWork(lws);
+            LabWork comparableLW = new LabWork(lws, username);
             boolean isMin = CollectionManager.getCollection().stream().noneMatch(lw -> comparableLW.compareTo(lw) >= 0);
             if (isMin) {
                 long newId = dbManager.addElement(lws, username);
@@ -312,7 +317,7 @@ public class CollectionCommandReceiver implements Serializable {
         try {
             if (CollectionManager.isEmpty()) throw new EmptyCollectionException();
             LabWorkStatic lws = (LabWorkStatic) objectArgs;
-            LabWork comparableLW = new LabWork(lws);
+            LabWork comparableLW = new LabWork(lws, username);
             Set<Long> oldIds = CollectionManager.getCollection().stream().
                     mapToLong(LabWork::getId).boxed().collect(Collectors.toSet());
 

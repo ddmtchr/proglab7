@@ -22,7 +22,9 @@ public class CommandInputReceiver extends InputReceiver {
     public Request createRequest(ConnectionProvider connectionProvider, Session session) {
         String[] command = parseCommand();
         try {
-            if (command[0].equals("exit")) {
+            if (command[0].isEmpty() || command[0].isBlank()) {
+                return null;
+            } else if (command[0].equals("exit")) {
                 if (command[1].equals(" ")) {
                     System.out.println("Выход из программы...");
                     System.exit(0);

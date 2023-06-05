@@ -15,12 +15,12 @@ public class ConsoleThread implements Runnable {
 
     public void run() {
         try {
-            while (true) {
+            while (Server.isRunning()) {
                 String[] serverCommand = scir.parseCommand();
                 executor.execute(serverCommand);
             }
         } catch (NoSuchElementException e) {
-            System.exit(0);
+            Server.shutdown();
         }
     }
 }

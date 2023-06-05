@@ -10,7 +10,6 @@ import utility.RequestType;
 import utility.ResponseBuilder;
 
 import java.io.Serializable;
-import java.sql.SQLException;
 
 public class RequestProcessor {
     private final DBConnector dbConnector;
@@ -65,10 +64,6 @@ public class RequestProcessor {
     }
 
     public void closeDBConnection() {
-        try {
-            dbConnector.getConnection().close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            dbConnector.close();
     }
 }

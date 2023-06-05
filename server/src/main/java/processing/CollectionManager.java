@@ -34,7 +34,7 @@ public class CollectionManager {
     }
 
     /**
-     * Sets last initialization time of collection for info command when collection is read from file.
+     * Sets last initialization time of collection for info command when collection is read from database.
      */
     public static void setLastInitTime() {
         lastInitTime = ZonedDateTime.now();
@@ -165,12 +165,12 @@ public class CollectionManager {
     /**
      * Shows the minimal point field of each element from collection.
      *
-     * @param coll Collection to be shown
+     * @param collection Collection to be shown
      */
-    public static void showMinPoint(Vector<LabWork> coll) {
+    public static void showMinPoint(Vector<LabWork> collection) {
         try {
             lock.lock();
-            for (LabWork lw : coll) {
+            for (LabWork lw : collection) {
                 ResponseBuilder.appendln("- LabWork " + "id = " + lw.getId() + "\n\t\tminimalPoint = " + lw.getMinimalPoint());
             }
         } finally {
@@ -195,10 +195,10 @@ public class CollectionManager {
         }
     }
 
-    public static LabWork getElementById(long id) throws NoSuchIDException {
+    public static LabWork getElementById(long id) {
         try {
             lock.lock();
-            return labStorage.stream().filter(i -> i.getId() == id).findFirst().orElseThrow(NoSuchIDException::new);
+            return labStorage.stream().filter(i -> i.getId() == id).findFirst().orElse(null);
         } finally {
             lock.unlock();
         }
@@ -214,6 +214,10 @@ public class CollectionManager {
         } finally {
             lock.unlock();
         }
+    }
+
+    public static boolean checkObjectOwner(long id, String username) {
+        return username.equals(getElementById(id).getUsername());
     }
 
     /**

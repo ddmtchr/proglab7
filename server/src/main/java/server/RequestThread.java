@@ -25,7 +25,7 @@ public class RequestThread implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
+        while (Server.isRunning()) {
             try {
                 Future<Request> requestFuture = receivingThread.submit(connectionProvider::receive);
                 Request request = requestFuture.get();
@@ -44,8 +44,16 @@ public class RequestThread implements Runnable {
                             .thenAcceptAsync(response -> connectionProvider.send(response), forkJoinPool);
                 }
             } catch (InterruptedException | ExecutionException e) {
+                logger.log(Level.WARNING, "AAAAAAAAAAAAAAAAAAAAAAAAAAA");
                 e.printStackTrace();
             }
+        }
+        try {
+            receivingThread.shutdown();
+            processingThread.shutdown();
+            forkJoinPool.shutdown();
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Ошибка при выключении сервера");
         }
     }
 }
