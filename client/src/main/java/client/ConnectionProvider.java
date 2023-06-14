@@ -92,7 +92,7 @@ public class ConnectionProvider {
             Response response = receive();
             ClientCollectionManager.setClientCollection(response.getBody().getCollection());
         } catch (SocketTimeoutException e) {
-            System.out.println("СокетТаймАутЭксепшон");
+            System.out.println("Ошибка получения обновленной коллекции, сервер на отдыхе");
         }
     }
 }
