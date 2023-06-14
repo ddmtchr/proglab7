@@ -1,16 +1,23 @@
 package client;
 
 import input.CommandInputReceiver;
+import stored.LabWork;
 import utility.Request;
 import utility.RequestType;
 import utility.Response;
+import utility.ResponseType;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Client {
+    private Vector<LabWork> clientCollection;
     private final String hostName;
     private final int port;
     private final Scanner scanner = new Scanner(System.in);
@@ -28,6 +35,7 @@ public class Client {
     public Client(String hostName, int port) {
         this.hostName = hostName;
         this.port = port;
+        this.clientCollection = ClientCollectionManager.getClientCollection();
     }
 
     private void greet(String username) {
@@ -48,7 +56,8 @@ public class Client {
             session = new Session(credentials.get(0), credentials.get(1));
             greet(session.getLogin());
             cir = new CommandInputReceiver(scanner, credentials.get(0));
-
+            runUpdatingThread(session);
+//            connectionProvider.loadCollection(session);
 //            int processCode = 0;
             do {
                 try {
@@ -58,8 +67,12 @@ public class Client {
 
                         Response response = connectionProvider.receive();
                         if (response == null) throw new SocketTimeoutException();
+                        if (response.getType() != ResponseType.GET_COLLECTION) {
+                            System.out.println(response.getBody().getText());
+                        } else {
+                            ClientCollectionManager.setClientCollection(response.getBody().getCollection());
+                        }
 
-                        System.out.println(response.getBody());
 //                        processCode = response.getExecCode();
                     }
                 } catch (SocketTimeoutException e) {
@@ -72,6 +85,9 @@ public class Client {
         } catch (NoSuchElementException e) {
             System.out.println("Ввод завершен пользователем");
             System.exit(0);
+        } catch (Exception e) {
+            System.out.println("Очень Непредвиденная Ошибка " + e.getClass().getName());
+
         }
     }
 
@@ -92,7 +108,7 @@ public class Client {
                             userLogin, encryptedPassword, userSalt, RequestType.REGISTER);
                     connectionProvider.send(registerRequest);
                     Response registerResponse = connectionProvider.receive();
-                    System.out.println(registerResponse.getBody());
+                    System.out.println(registerResponse.getBody().getText());
                     if (registerResponse == null)
                         throw new SocketTimeoutException();
                     if (registerResponse.getExecCode() == 0) {
@@ -108,10 +124,10 @@ public class Client {
                     if (saltResponse == null)
                         throw new SocketTimeoutException();
                     if (saltResponse.getExecCode() == 1) {
-                        System.out.println(saltResponse.getBody());
+                        System.out.println(saltResponse.getBody().getText());
                         continue;
                     }
-                    String userSalt = saltResponse.getBody();
+                    String userSalt = saltResponse.getBody().getText();
 
                     String encryptedPassword = credentialsInputHandler.encryptPassword(userPassword, userSalt);
                     Request loginRequest = new Request(null, null, null,
@@ -124,12 +140,30 @@ public class Client {
                         doneAuthentication = true;
                         credentials.set(1, encryptedPassword);
                     }
-                    System.out.println(loginResponse.getBody());
+                    System.out.println(loginResponse.getBody().getText());
                 }
             } catch (SocketTimeoutException e) {
                 System.out.println("Сервер прилег отдохнуть, попробуйте еще раз");
             }
         } while (!doneAuthentication);
         return credentials;
+    }
+
+    private void runUpdatingThread(Session session) {
+        Thread updatingThread = new Thread(() -> {
+            while(true) {
+                try {
+                    connectionProvider.loadCollection(session);
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        updatingThread.start();
+
+//        ScheduledExecutorService updatingThread = Executors.newSingleThreadScheduledExecutor();
+//        updatingThread.scheduleWithFixedDelay(() -> connectionProvider.loadCollection(session),
+//                3, 3, TimeUnit.SECONDS);
     }
 }

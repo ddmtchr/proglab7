@@ -43,15 +43,14 @@ public class RequestProcessor {
             execCode = dbManager.registerUser(request.getUserName(), request.getUserPassword(), request.getUserSalt());
         } else if (request.getType() == RequestType.LOGIN) {
             execCode = dbManager.loginUser(request.getUserName(), request.getUserPassword());
-
         } else if (request.getType() == RequestType.GET_SALT) {
             execCode = dbManager.getSaltByLogin(request.getUserName());
         } else {
-            execCode = 1;
-            ResponseBuilder.appendln("Неверный тип запроса");
+            execCode = 0;
         }
         return execCode;
     }
+
 
     public boolean validateCommand(Command cmd, String stringArgs) {
         try {

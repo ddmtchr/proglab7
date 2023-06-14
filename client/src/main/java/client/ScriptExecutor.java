@@ -55,7 +55,7 @@ public class ScriptExecutor {
                 if (response == null) {
                     execCommandCode = 3;
                 } else {
-                    System.out.println(response.getBody());
+                    System.out.println(response.getBody().getText());
                     execCommandCode = response.getExecCode();
                 }
 

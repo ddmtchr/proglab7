@@ -3,11 +3,13 @@ package input;
 import client.*;
 import exceptions.ErrorInScriptException;
 import exceptions.NoSuchCommandException;
+import stored.LabWork;
 import utility.LabWorkStatic;
 import utility.Request;
 import utility.RequestType;
 
 import java.util.Scanner;
+import java.util.Vector;
 
 public class CommandInputReceiver extends InputReceiver {
     private FieldInputReceiver fir;
@@ -38,6 +40,20 @@ public class CommandInputReceiver extends InputReceiver {
                 } else {
                     ScriptExecutor scriptExecutor = new ScriptExecutor();
                     scriptExecutor.executeScript(command[1], connectionProvider, session);
+                }
+            } else if (command[0].equals("show")) {
+                String[] argsArray = command[1].split("\\s+");
+                if (argsArray.length != 0) {
+                    System.out.println("Использование: show");
+                } else {
+                    Vector<LabWork> collection = ClientCollectionManager.getClientCollection();
+                    if (!collection.isEmpty()) {
+                        for (LabWork lw : collection) {
+                            System.out.println(lw.toString());
+                        }
+                    } else {
+                        System.out.println("Коллекция пуста");
+                    }
                 }
             } else {
                 Request request = pack(command, session);

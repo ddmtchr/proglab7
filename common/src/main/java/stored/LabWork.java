@@ -2,12 +2,13 @@ package stored;
 
 import utility.LabWorkStatic;
 
+import java.io.Serializable;
 import java.time.ZonedDateTime;
 
 /**
  * Class to be contained in the collection.
  */
-public class LabWork implements Comparable<LabWork> {
+public class LabWork implements Comparable<LabWork>, Serializable {
     private long id;
     private final String name;
     private final Coordinates coordinates;
@@ -16,7 +17,7 @@ public class LabWork implements Comparable<LabWork> {
     private final long averagePoint;
     private final Difficulty difficulty;
     private Discipline discipline;
-    private String username;
+    private final String username;
 
     public LabWork(LabWorkStatic lws, String username) {
         this.name = lws.getName();
