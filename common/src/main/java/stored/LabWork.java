@@ -4,6 +4,9 @@ import utility.LabWorkStatic;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 
 /**
  * Class to be contained in the collection.
@@ -79,6 +82,11 @@ public class LabWork implements Comparable<LabWork>, Serializable {
         return creationDate;
     }
 
+    public String creationDateToString() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss VV");
+        return creationDate.truncatedTo(ChronoUnit.SECONDS).format(formatter);
+    }
+
     /**
      * Gets the minimal point of LabWork.
      * @return Minimal point of LabWork
@@ -141,11 +149,35 @@ public class LabWork implements Comparable<LabWork>, Serializable {
      */
     @Override
     public String toString() {
-        return "LabWork " + "id = " + id + "\n\t\tname = " + name + "\n\t\tcoordinates = " + coordinates.toString() +
-                "\n\t\tcreationDate = " + creationDate.toString() + "\n\t\tminimalPoint = " + minimalPoint +
-                "\n\t\taveragePoint = " + averagePoint + "\n\t\tdifficulty = " + difficulty.name() +
-                "\n\t\tdiscipline = " + (discipline == null ? "null" : discipline.toString()) +
-                "\n\t\towner = " + username;
+        return "LabWork " + "id = " + id + "\n\tname = " + name + "\n\tcoordinates = " + coordinates.toString() +
+                "\n\tcreationDate = " + creationDate.toString() + "\n\tminimalPoint = " + minimalPoint +
+                "\n\taveragePoint = " + averagePoint + "\n\tdifficulty = " + difficulty.name() +
+                "\n\tdiscipline = " + (discipline == null ? "null" : discipline.toString()) +
+                "\n\towner = " + username;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof LabWork)) return false;
+        LabWork lw = (LabWork) o;
+        return lw.id == this.id && lw.name == this.name && lw.coordinates.equals(this.coordinates) &&
+                lw.creationDate.equals(this.creationDate) && lw.minimalPoint == this.minimalPoint &&
+                lw.averagePoint == this.averagePoint && lw.difficulty.equals(this.difficulty) &&
+                lw.discipline.equals(this.discipline);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (id ^ (id >>> 32));
+        result = 31 * result + name.hashCode();
+        result = 31 * result + coordinates.hashCode();
+        result = 31 * result + creationDate.hashCode();
+        result = 31 * result + minimalPoint.hashCode();
+        result = 31 * result + (int) (averagePoint ^ (averagePoint >>> 32));
+        result = 31 * result + difficulty.hashCode();
+        result = 31 * result + (discipline != null ? discipline.hashCode() : 0);
+        result = 31 * result + username.hashCode();
+        return result;
+    }
 }

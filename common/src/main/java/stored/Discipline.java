@@ -2,6 +2,7 @@ package stored;
 
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Class whose objects are being used as field of LabWork objects.
@@ -52,7 +53,20 @@ public class Discipline implements Serializable {
      */
     @Override
     public String toString() {
-        return "Discipline(name = " + name + " lectureHours = " + lectureHours + " practiceHours = " + practiceHours +
-                " selfStudyHours = " + selfStudyHours + ")";
+        return "Discipline(" + "\n\t\tname = " + name + "\n\t\tlectureHours = " + lectureHours + "\n\t\tpracticeHours = " + practiceHours +
+                "\n\t\tselfStudyHours = " + selfStudyHours + ")";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Discipline d = (Discipline) o;
+
+        if (lectureHours != d.lectureHours) return false;
+        if (selfStudyHours != d.selfStudyHours) return false;
+        if (!Objects.equals(name, d.name)) return false;
+        return Objects.equals(practiceHours, d.practiceHours);
     }
 }

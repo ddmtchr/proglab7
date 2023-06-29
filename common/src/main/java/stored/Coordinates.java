@@ -1,6 +1,7 @@
 package stored;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Coordinates implements Serializable {
     private final int x; // Значение поля должно быть больше -934
@@ -34,6 +35,14 @@ public class Coordinates implements Serializable {
     @Override
     public String toString() {
         return "(" + x + ", " + y + ")";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Coordinates c = (Coordinates) o;
+        return x == c.x && (float)y == (float)(c.y);
     }
 
 }
